@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw==" crossorigin=""></script>
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+     <div id="mapid"></div>
+     <div id="botones">
+        <button id="start-polygon" onclick="startPolygon()">Dibuja Poligono</button>
+        <button id="draw-polygon" onclick="finishPolygon()" disabled>Terminar Poligono</button>
+        <button id="show-location" onclick="showLocation()">Muestra mi ubicación</button>
+        <button id="start-marker" onclick="startMarker()">Dibuja marcadores</button>
+        <button id="draw-marker" onclick="finishMarker()" disabled>Terminar marcadores</button>
+        
+
+</div>     <script>
+      // VARIABLE GLOBAL
+let map
+let pointsArray
+let polylinePoints
+// DOM READY
+document.addEventListener("DOMContentLoaded", function () {
+    map = L.map("mapid").setView([19.4, -99.4], 10)
+    
+    // Tiles de open street maps
+    //L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map)
+
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		id: 'mapbox.streets'
+    }).addTo(map);
+    // let marker1 = L.marker([19.4, -99.4]).addTo(map)
+    // let marker2 = L.marker([19.5, -99.5]).addTo(map)
+    // let marker3 = L.marker([19.3, -99.5]).addTo(map)
+    // let marker4 = L.marker([19.2, -99.6]).addTo(map)
+    let markerTelmexHub = L.marker([19.431326, -99.136773]).addTo(map)
+    // marker1.bindPopup("<ul><li>Hola 1</li><li>Hola 2</li><li>Hola 3</li><li>Hola 4</li><li>Hola 5</li</ul>")
+    // marker2.bindTooltip("")
+    // marker3.bindTooltip("Aloha")
+    // marker4.bindTooltip("YOLO")
+    markerTelmexHub.bindTooltip("TelmexHub")
+    L.polygon([
+    [19.51291474603399, -99.16118144989014],
+    [19.516555254908315, -99.14998054504395],
+    [19.51728334684529, -99.15079593658449],
+    [19.52027657924074, -99.15736198425293],
+    [19.51744514460812, -99.15873527526855],
+    [19.51975074513091, -99.16367053985597]
+    ]).addTo(map);
+
+ //Define an array of Latlng objects (points along the line)
+        
+ var micro = [
+            
+         
+            new L.LatLng(19.51481591089557, -99.15504455566408), 
+            new L.LatLng(19.4714476150852, -99.137020111084),
+            new L.LatLng(19.469030057208858, -99.13908004760744)
+        ];
+        
+         
+         var polylineOptionsMicro = {
+               color: 'red',
+               weight: 6,
+               dashArray: '10,10',
+               opacity: 0.9
+             };
+
+         var polyline = new L.Polyline(micro, polylineOptionsMicro);
+
+         map.addLayer(polyline);             
+
+         var metro = [
+            
+            new L.LatLng(19.469009, -99.139038),
+            new L.LatLng( 19.437392, -99.146654),
+            new L.LatLng(19.435398, -99.136934)
+        ];
+      
+         
+         var polylineOptions = {
+               color: 'blue',
+               weight: 6,
+               opacity: 0.9
+             };
+
+         var polyline = new L.Polyline(metro, polylineOptions);
+
+         map.addLayer(polyline);             
+
+})
+
+function onMapClick(e) {
+    pointsArray.push([e.latlng.lat, e.latlng.lng])
+    console.log(pointsArray)
+}function onMapClick2(e) {
+    polylinePoints.push([e.latlng.lat, e.latlng.lng])
+    console.log(polylinePoints)
+}
+// -------------------------------------------
+function startMarker(e) {
+    polylinePoints = []
+    document.getElementById("start-marker").setAttribute("disabled", true)
+    document.getElementById("draw-marker").removeAttribute("disabled")
+    map.on('click', onMapClick2)
+}
+function finishMarker(e) {
+    document.getElementById("draw-marker").setAttribute("disabled", true)
+    document.getElementById("start-marker").removeAttribute("disabled")
+    map.off('click', onMapClick2)
+    // let coords = "<ul>" + pointsArray.map(p => `<li>${p}</li>`).join('') + "</ul>"
+    // L.polygon(pointsArray,{}).bindPopup(coords).addTo(map)
+    L.polyline(polylinePoints,{}).addTo(map)
+
+
+         var polylineOptions = {
+             color: 'purple',
+             weight: 5,
+             opacity: 0.6
+            };
+            var polyline = L.polyline(polylinePoints, {color: 'red'}).addTo(map);
+            map.fitBounds(polyline.getBounds());
+            
+            map.addLayer(polyline);             
+        }
+
+
+// -----------------------------------------------
+
+function startPolygon() {
+    pointsArray = []
+    document.getElementById("start-polygon").setAttribute("disabled", true)
+    document.getElementById("draw-polygon").removeAttribute("disabled")
+    map.on('click', onMapClick)
+}
+
+function finishPolygon() {
+    document.getElementById("draw-polygon").setAttribute("disabled", true)
+    document.getElementById("start-polygon").removeAttribute("disabled")
+    map.off('click', onMapClick)
+    // let coords = "<ul>" + pointsArray.map(p => `<li>${p}</li>`).join('') + "</ul>"
+    // L.polygon(pointsArray,{}).bindPopup(coords).addTo(map)
+    L.polygon(pointsArray,{}).addTo(map)
+}
+
+function showLocation () {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(moveToLocation)
+    } else {
+        console.log("No tienes acceso a GPS")
+    }
+}
+
+function moveToLocation (position) {
+    console.log(position)
+    map.flyTo([position.coords.latitude, position.coords.longitude], 16)
+}
+
+
+
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,19 @@
+$color-impacto :rgb(236, 25, 25) ;
+$color-div:rgb(139, 139, 139);
+$font-size-pri:5em;
+$font-size-sec:3em;
+$font-size-ter:1.7em;
+$font-size-text:0.9em;
+
+h1 {
+    font-size: $font-size-pri;
+    margin: 10px 0;
+    line-height: 0.8;
+    text-align: center;
+}
+
+     span.rojo {
+        color:$color-impacto;
+        font-weight: bold;  
+        font-family: 'Roboto Slab'
+    }
